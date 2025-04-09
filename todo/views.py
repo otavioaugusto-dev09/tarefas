@@ -8,6 +8,15 @@ from .forms import TaskForm
 def task_list(request):
     tasks = Task.objects.all()
     form = TaskForm()
+    if request.GET.get('json') in ['True', 'true', '1']:
+        return JsonResponse([
+            {
+                'id': task.id,
+                'title': task.title,
+                'completed': task.completed,
+            } for task in tasks
+        ], safe=False)
+
     return render(request, 'index.html', {'tasks': tasks, 'form': form})
 
 @csrf_exempt
@@ -20,6 +29,14 @@ def task_create(request):
             return JsonResponse({'id': task.id, 'title': task.title, 'completed': task.completed}, status=201)
     return JsonResponse({'error': 'Invalid data'}, status=400)
 
+
+@csrf_exempt
+def task_list_create(request):
+    if request.method == 'GET':
+        return task_list(request)
+    if request.method == 'POST':
+        return task_create(request)
+    
 
 @csrf_exempt
 def task_handle(request, task_id):
