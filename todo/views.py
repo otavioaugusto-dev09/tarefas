@@ -13,6 +13,7 @@ def task_list(request):
             {
                 'id': task.id,
                 'title': task.title,
+                'time' : task.time,
                 'completed': task.completed,
             } for task in tasks
         ], safe=False)
@@ -26,7 +27,7 @@ def task_create(request):
         form = TaskForm(data)
         if form.is_valid():
             task = form.save()
-            return JsonResponse({'id': task.id, 'title': task.title, 'completed': task.completed}, status=201)
+            return JsonResponse({'id': task.id, 'title': task.title, 'time': task.time, 'completed': task.completed}, status=201)
     return JsonResponse({'error': 'Invalid data'}, status=400)
 
 
