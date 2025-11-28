@@ -7,18 +7,21 @@ from .forms import TaskForm
 
 def task_list(request):
     tasks = Task.objects.all()
+    total = len(list(tasks))
+    done = Task.objects.filter(completed=True).count()
     form = TaskForm()
     if request.GET.get('json') in ['True', 'true', '1']:
         return JsonResponse([
             {
                 'id': task.id,
                 'title': task.title,
-                'time' : task.time,
+                'time': task.time,
+                'local': task.local,
                 'completed': task.completed,
             } for task in tasks
         ], safe=False)
 
-    return render(request, 'index.html', {'tasks': tasks, 'form': form})
+    return render(request, 'index.html', {'tasks': tasks, 'form': form, 'total': total, 'done': done, 'pendent': total - done,})
 
 @csrf_exempt
 def task_create(request):
@@ -27,7 +30,7 @@ def task_create(request):
         form = TaskForm(data)
         if form.is_valid():
             task = form.save()
-            return JsonResponse({'id': task.id, 'title': task.title, 'time': task.time, 'completed': task.completed}, status=201)
+            return JsonResponse({'id': task.id, 'title': task.title, 'time': task.time, 'local': task.local, 'completed': task.completed}, status=201)
     return JsonResponse({'error': 'Invalid data'}, status=400)
 
 
