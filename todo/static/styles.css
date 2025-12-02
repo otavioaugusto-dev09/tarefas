@@ -1,0 +1,4 @@
+.task-completed {
+    background-color: #e6ffe6 !important;
+    transition: 0.3s ease;
+}
